@@ -30,3 +30,7 @@ Para configurar o ambiente IoT no Wokwi, use o seguinte link:
 
    ```bash
    npm install -g --unsafe-perm node-red
+
+## Link do vídeo explicativo 
+
+- [Video](https://youtu.be/EEpRVY8Rc2c?feature=shared)
