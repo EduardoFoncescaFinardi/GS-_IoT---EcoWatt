@@ -1,0 +1,189 @@
+[
+    {
+        "id": "8c7521802a6f257c",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6f47be7d7676e88b",
+        "type": "debug",
+        "z": "8c7521802a6f257c",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 180,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3294ad8287a5f66b",
+        "type": "mqtt in",
+        "z": "8c7521802a6f257c",
+        "name": "",
+        "topic": "fiap/iot/leds",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "eba07220f2e624fa",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 170,
+        "y": 220,
+        "wires": [
+            [
+                "6f47be7d7676e88b",
+                "074907578a915f8a",
+                "e21af42af26551b7"
+            ]
+        ]
+    },
+    {
+        "id": "074907578a915f8a",
+        "type": "function",
+        "z": "8c7521802a6f257c",
+        "name": "function 2",
+        "func": "// Verifique se msg.payload já é um objeto\nif (typeof msg.payload === 'object') {\n  // Acesse diretamente as propriedades do objeto\n  var data = msg.payload;\n\n  // Formate a mensagem com base nos estados dos LEDs\n  msg.payload = {\n    estados_leds: {\n      \"LED1\": data.LED1 ? \"Ligado\" : \"Desligado\",\n      \"LED2\": data.LED2 ? \"Ligado\" : \"Desligado\",\n      \"LED3\": data.LED3 ? \"Ligado\" : \"Desligado\",\n      \"LED4\": data.LED4 ? \"Ligado\" : \"Desligado\"\n    },\n    consumo: data.Consumo.toFixed(2)\n  };\n\n  return msg;\n} else {\n  // Log de erro se o payload não for um objeto esperado\n  node.error(\"Payload não é um objeto JSON válido\", msg);\n  return null; // Interrompe o fluxo se não for o tipo correto\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 320,
+        "wires": [
+            [
+                "9f1c1dce3960489b"
+            ]
+        ]
+    },
+    {
+        "id": "9f1c1dce3960489b",
+        "type": "ui_template",
+        "z": "8c7521802a6f257c",
+        "group": "1b9485f62e11a640",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "format": "<div style=\"background-color: #f8f9fa; padding: 10px; border-radius: 5px; font-family: Arial, sans-serif;\">\n  <h3 style=\"color: #007bff; margin-bottom: 10px;\">Estado dos LEDs</h3>\n  <ul style=\"list-style-type: none; padding: 0;\">\n    <li>\n      <span style=\"font-weight: bold;\">LED 1:</span>\n      <span style=\"color: {{msg.payload.estados_leds.LED1 == 'Ligado' ? 'green' : 'red'}};\">\n        {{msg.payload.estados_leds.LED1}}\n      </span>\n    </li>\n    <li>\n      <span style=\"font-weight: bold;\">LED 2:</span>\n      <span style=\"color: {{msg.payload.estados_leds.LED2 == 'Ligado' ? 'green' : 'red'}};\">\n        {{msg.payload.estados_leds.LED2}}\n      </span>\n    </li>\n    <li>\n      <span style=\"font-weight: bold;\">LED 3:</span>\n      <span style=\"color: {{msg.payload.estados_leds.LED3 == 'Ligado' ? 'green' : 'red'}};\">\n        {{msg.payload.estados_leds.LED3}}\n      </span>\n    </li>\n    <li>\n      <span style=\"font-weight: bold;\">LED 4:</span>\n      <span style=\"color: {{msg.payload.estados_leds.LED4 == 'Ligado' ? 'green' : 'red'}};\">\n        {{msg.payload.estados_leds.LED4}}\n      </span>\n    </li>\n  </ul>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 680,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e21af42af26551b7",
+        "type": "function",
+        "z": "8c7521802a6f257c",
+        "name": "function 3",
+        "func": "if (typeof msg.payload === 'object' && msg.payload !== null) {\n    if (msg.payload.hasOwnProperty('Consumo')) {\n        var potencia = msg.payload.Consumo;\n\n        msg.payload = potencia;\n\n        return msg;\n    } else {\n        node.error(\"Campo 'Consumo' não encontrado no payload\", msg);\n        return null;\n    }\n} else {\n    node.error(\"Payload não é um objeto JSON válido\", msg);\n    return null;\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 200,
+        "wires": [
+            [
+                "a04111707754ec57"
+            ]
+        ]
+    },
+    {
+        "id": "a04111707754ec57",
+        "type": "ui_gauge",
+        "z": "8c7521802a6f257c",
+        "name": "",
+        "group": "1b9485f62e11a640",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "gauge",
+        "label": "units",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "500",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 670,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "eba07220f2e624fa",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "broker.hivemq.com/",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "1b9485f62e11a640",
+        "type": "ui_group",
+        "name": "Default",
+        "tab": "26bfd20877785c38",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "26bfd20877785c38",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
